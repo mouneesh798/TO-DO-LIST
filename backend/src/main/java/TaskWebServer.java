@@ -1,5 +1,3 @@
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -10,10 +8,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+
 public class TaskWebServer {
     private final TaskManager manager;
     private final int port;
     private final Path frontendDirectory;
+    private HttpServer httpServer;
 
     public TaskWebServer(TaskManager manager) {
         this(manager, 8080);
@@ -26,18 +28,22 @@ public class TaskWebServer {
     }
 
     public void start() throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        httpServer = HttpServer.create(new InetSocketAddress(port), 0);
 
-        server.createContext("/api/tasks", this::handleTaskApi);
-        server.createContext("/tasks", this::handleLegacyTasks);
-        server.createContext("/tasks/complete", this::handleLegacyCompleteTask);
-        server.createContext("/tasks/delete", this::handleLegacyDeleteTask);
-        server.createContext("/", this::handleStaticFile);
-        server.setExecutor(null);
-        server.start();
+        httpServer.createContext("/api/tasks", this::handleTaskApi);
+        httpServer.createContext("/api/tasks/", this::handleTaskApi);
+        httpServer.createContext("/tasks", this::handleLegacyTasks);
+        httpServer.createContext("/tasks/complete", this::handleLegacyCompleteTask);
+        httpServer.createContext("/tasks/delete", this::handleLegacyDeleteTask);
+        httpServer.createContext("/", this::handleStaticFile);
+        httpServer.setExecutor(null);
+        httpServer.start();
     }
 
     public int getPort() {
+        if (httpServer != null) {
+            return httpServer.getAddress().getPort();
+        }
         return port;
     }
 
@@ -79,6 +85,13 @@ public class TaskWebServer {
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
 
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            handleCorsPreflight(exchange);
+            return;
+        }
+
+        setCorsHeaders(exchange);
+
         if ("/api/tasks".equals(path)) {
             if ("GET".equalsIgnoreCase(method)) {
                 sendJson(exchange, 200, tasksToJson());
@@ -111,6 +124,8 @@ public class TaskWebServer {
     }
 
     private void handleLegacyTasks(HttpExchange exchange) throws IOException {
+        setCorsHeaders(exchange);
+
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             String formData = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             manager.addTask(parseTaskNameFromForm(formData));
@@ -285,6 +300,31 @@ public class TaskWebServer {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response);
         }
+    }
+
+    private void setCorsHeaders(HttpExchange exchange) {
+        String origin = exchange.getRequestHeaders().getFirst("Origin");
+        if (origin != null && isAllowedOrigin(origin)) {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", origin);
+        } else {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        }
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+        exchange.getResponseHeaders().add("Vary", "Origin");
+    }
+
+    private boolean isAllowedOrigin(String origin) {
+        return origin.equals("https://to-do-list-mntn.vercel.app")
+                || origin.equals("https://to-do-list-mntn-git-main-mouneesh.vercel.app")
+                || origin.equals("https://to-do-list-mntn-b5dy2uhgf-mouneesh.vercel.app")
+                || origin.startsWith("http://localhost")
+                || origin.startsWith("http://127.0.0.1");
+    }
+
+    private void handleCorsPreflight(HttpExchange exchange) throws IOException {
+        setCorsHeaders(exchange);
+        exchange.sendResponseHeaders(204, -1);
     }
 
     private void redirectHome(HttpExchange exchange) throws IOException {
