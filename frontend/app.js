@@ -5,6 +5,11 @@ const totalCount = document.querySelector("#total-count");
 const pendingCount = document.querySelector("#pending-count");
 const completedCount = document.querySelector("#completed-count");
 const openCount = document.querySelector("#open-count");
+const apiBaseUrl = (window.API_BASE_URL || "").replace(/\/$/, "");
+
+function buildApiUrl(path) {
+    return `${apiBaseUrl}${path}`;
+}
 
 async function requestJson(url, options = {}) {
     const response = await fetch(url, {
@@ -23,7 +28,7 @@ async function requestJson(url, options = {}) {
 }
 
 async function loadTasks() {
-    const tasks = await requestJson("/api/tasks");
+    const tasks = await requestJson(buildApiUrl("/api/tasks"));
     renderTasks(tasks);
 }
 
@@ -79,7 +84,7 @@ function renderTasks(tasks) {
 }
 
 async function addTask(taskName) {
-    await requestJson("/api/tasks", {
+    await requestJson(buildApiUrl("/api/tasks"), {
         method: "POST",
         body: JSON.stringify({ task: taskName })
     });
@@ -88,12 +93,12 @@ async function addTask(taskName) {
 }
 
 async function completeTask(id) {
-    await requestJson(`/api/tasks/${id}/complete`, { method: "POST" });
+    await requestJson(buildApiUrl(`/api/tasks/${id}/complete`), { method: "POST" });
     await loadTasks();
 }
 
 async function deleteTask(id) {
-    await requestJson(`/api/tasks/${id}`, { method: "DELETE" });
+    await requestJson(buildApiUrl(`/api/tasks/${id}`), { method: "DELETE" });
     await loadTasks();
 }
 

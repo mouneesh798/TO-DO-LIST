@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: todolist-project
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: 10000
