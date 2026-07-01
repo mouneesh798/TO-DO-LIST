@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskManager {
     private final ArrayList<Task> tasks = new ArrayList<>();
@@ -15,9 +16,18 @@ public class TaskManager {
     }
 
     public void addTask(String taskName) {
-        tasks.add(new Task(taskName, false));
+        if (taskName == null || taskName.trim().isEmpty()) {
+            System.out.println("Task name cannot be empty.");
+            return;
+        }
+
+        tasks.add(new Task(taskName.trim(), false));
         saveTasks();
         System.out.println("Task Added Successfully!");
+    }
+
+    public List<Task> getTasks() {
+        return new ArrayList<>(tasks);
     }
 
     public void viewTasks() {
