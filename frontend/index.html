@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java To-Do List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <div class="hero-main">
+                <div>
+                    <p class="eyebrow">Focused task manager</p>
+                    <h1>Plan the day with clarity.</h1>
+                    <p class="subtitle">A cleaner Java to-do dashboard for capturing tasks quickly and keeping your current workload easy to scan.</p>
+                </div>
+                <form class="add-form" id="add-task-form">
+                    <input id="task-input" name="task" placeholder="Add a new task..." autocomplete="off" required>
+                    <button type="submit">Add Task</button>
+                </form>
+            </div>
+            <aside class="stats" aria-label="Task summary">
+                <div class="stat"><strong id="total-count">0</strong><span>Total Tasks</span></div>
+                <div class="stat"><strong id="pending-count">0</strong><span>Pending</span></div>
+                <div class="stat"><strong id="completed-count">0</strong><span>Completed</span></div>
+            </aside>
+        </section>
+
+        <section class="tasks">
+            <div class="section-title">
+                <h2>Current Tasks</h2>
+                <span class="pill" id="open-count">0 still open</span>
+            </div>
+            <div id="task-list"></div>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>

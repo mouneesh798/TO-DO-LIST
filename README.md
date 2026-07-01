@@ -1,31 +1,40 @@
 # Java To-Do List
 
-A simple command-line to-do list application built in Java that demonstrates object-oriented programming, file handling, and exception handling.
+A simple Java HTTP To-Do List application split into a standalone frontend and backend.
 
 ## Features
 - Add tasks
 - View tasks
-- Delete tasks
 - Mark tasks as completed
-- Data is saved to a local file
+- Remove completed tasks
+- Data is saved by the backend to `backend/tasks.txt`
 
-## How to run
+## Project layout
+- `frontend/` contains the browser UI: HTML, CSS, and JavaScript.
+- `backend/` contains the Java HTTP server, Maven build, and task persistence.
+
+## Run the backend and frontend together
 ```bash
-cd TodoListProject
-javac src/Main.java src/Task.java src/TaskManager.java
-java -cp src Main
+cd backend
+mvn clean package
+java -jar target/todolist-project-1.0-SNAPSHOT.jar
 ```
+
+Then open:
+```text
+http://localhost:8080
+```
+
+The Java backend serves the files from `frontend/`, so a separate frontend server is not required.
+
+## API
+- `GET /api/tasks` returns all tasks.
+- `POST /api/tasks` adds a task from JSON like `{ "task": "Buy milk" }`.
+- `POST /api/tasks/{id}/complete` marks a task as completed.
+- `DELETE /api/tasks/{id}` removes a task.
 
 ## GitHub repository
 This project is intended to be published at:
 ```text
 https://github.com/mouneesh798/TO-DO-LIST
-```
-
-Others can clone it with:
-```bash
-git clone https://github.com/mouneesh798/TO-DO-LIST.git
-cd TO-DO-LIST
-javac src/Main.java src/Task.java src/TaskManager.java src/TaskWebServer.java
-java -cp src Main
 ```
