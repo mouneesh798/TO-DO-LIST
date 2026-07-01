@@ -5,7 +5,7 @@ const totalCount = document.querySelector("#total-count");
 const pendingCount = document.querySelector("#pending-count");
 const completedCount = document.querySelector("#completed-count");
 const openCount = document.querySelector("#open-count");
-const apiBaseUrl = (window.API_BASE_URL || "").replace(/\/$/, "");
+const apiBaseUrl = (window.API_BASE_URL || "https://to-do-list-53ez.onrender.com").replace(/\/$/, "");
 
 function buildApiUrl(path) {
     return `${apiBaseUrl}${path}`;
