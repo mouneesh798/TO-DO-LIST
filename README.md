@@ -17,10 +17,15 @@ java -cp src Main
 ```
 
 ## GitHub repository
-Once you push this project to GitHub, others can clone it with:
+This project is intended to be published at:
+```text
+https://github.com/mouneesh798/TO-DO-LIST
+```
+
+Others can clone it with:
 ```bash
-git clone https://github.com/<your-username>/<your-repo-name>.git
-cd <your-repo-name>
-javac src/Main.java src/Task.java src/TaskManager.java
+git clone https://github.com/mouneesh798/TO-DO-LIST.git
+cd TO-DO-LIST
+javac src/Main.java src/Task.java src/TaskManager.java src/TaskWebServer.java
 java -cp src Main
 ```
